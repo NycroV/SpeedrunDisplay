@@ -1,2 +1,45 @@
-# This file will automatically update with entries for new content after a build and reload.
+Configs: {
+	SpeedrunConfig: {
+		DisplayName: Speedrun Config
 
+		SpeedrunUIPos: {
+			Label: Speedrun U I Pos
+			Tooltip: ""
+		}
+
+		LockSpeedrunUIPos: {
+			Label: Lock Speedrun U I Pos
+			Tooltip: ""
+		}
+
+		SplitsToShow: {
+			Label: Splits To Show
+			Tooltip: ""
+		}
+
+		DefaultRunCategory: {
+			Label: Default Run Category
+			Tooltip: ""
+		}
+
+		AutoRestart: {
+			Label: Auto Restart
+			Tooltip: ""
+		}
+
+		SpeedrunUIPosX: {
+			Label: Speedrun U I Pos X
+			Tooltip: ""
+		}
+
+		SpeerunUIPosY: {
+			Label: Speerun U I Pos Y
+			Tooltip: ""
+		}
+
+		SpeedrunUIScale: {
+			Label: Speedrun U I Scale
+			Tooltip: ""
+		}
+	}
+}

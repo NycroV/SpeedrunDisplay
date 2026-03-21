@@ -1,16 +1,16 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace System.Collections.Generic;
+namespace SpeedrunTimer.DataStructures;
+#nullable enable
 
 /// <summary>
 /// Represents a dictionary with non-null unique values that provides access to an inverse dictionary.
 /// </summary>
 /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
 /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-[DebuggerTypeProxy(typeof(DictionaryDebugView<,>))]
-[DebuggerDisplay("Count = {Count}")]
 public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TKey, TValue>, IReadOnlyBidirectionalDictionary<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
@@ -93,25 +93,18 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
         }
     }
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IBidirectionalDictionary<TValue, TKey> IBidirectionalDictionary<TKey, TValue>.Inverse => Inverse;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IReadOnlyBidirectionalDictionary<TValue, TKey> IReadOnlyBidirectionalDictionary<TKey, TValue>.Inverse => Inverse.AsReadOnly();
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => false;
 
     #endregion
@@ -150,11 +143,7 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
     /// <param name="collection">The <see cref="IEnumerable{T}"/> whose elements are copied to the new <see cref="BidirectionalDictionary{TKey, TValue}"/>.</param>
     /// <exception cref="ArgumentNullException"></exception>
     public BidirectionalDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
         : this(new Dictionary<TKey, TValue>(collection)) { }
-#elif NETSTANDARD2_0
-        : this(new Dictionary<TKey, TValue>(collection?.ToDictionary(pair => pair.Key, pair => pair.Value))) { }
-#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BidirectionalDictionary{TKey, TValue}"/> class that is empty,
@@ -206,24 +195,20 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
     /// <exception cref="ArgumentNullException"></exception>
     public BidirectionalDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection,
         IEqualityComparer<TKey>? keyComparer, IEqualityComparer<TValue>? valueComparer)
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
         : this(new Dictionary<TKey, TValue>(collection, keyComparer), valueComparer) { }
-#elif NETSTANDARD2_0
-        : this(new Dictionary<TKey, TValue>(collection?.ToDictionary(pair => pair.Key, pair => pair.Value, keyComparer)), valueComparer) { }
-#endif
 
     private BidirectionalDictionary(BidirectionalDictionary<TValue, TKey> inverse)
     {
         _baseDictionary = inverse._baseDictionary.ToDictionary(pair => pair.Value, pair => pair.Key, inverse.ValueComparer);
-        ValueComparer   = inverse.KeyComparer;
-        Inverse         = inverse;
+        ValueComparer = inverse.KeyComparer;
+        Inverse = inverse;
     }
 
     private BidirectionalDictionary(Dictionary<TKey, TValue> dictionary, IEqualityComparer<TValue>? valueComparer = null)
     {
         _baseDictionary = dictionary;
-        ValueComparer   = valueComparer ?? EqualityComparer<TValue>.Default;
-        Inverse         = new BidirectionalDictionary<TValue, TKey>(this);
+        ValueComparer = valueComparer ?? EqualityComparer<TValue>.Default;
+        Inverse = new BidirectionalDictionary<TValue, TKey>(this);
     }
 
     #endregion
@@ -279,14 +264,7 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
         if (key == null)
             throw new ArgumentNullException(nameof(key));
 
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
-        return _baseDictionary.Remove(key, out value!) &&
-            Inverse._baseDictionary.Remove(value);
-#elif NETSTANDARD2_0
-        return _baseDictionary.TryGetValue(key, out value) &&
-            _baseDictionary.Remove(key) &&
-            Inverse._baseDictionary.Remove(value);
-#endif
+        return _baseDictionary.Remove(key, out value!) && Inverse._baseDictionary.Remove(value);
     }
 
     /// <summary>
@@ -350,7 +328,6 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
     /// an element with the specified key; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue(TKey key, out TValue value) => _baseDictionary.TryGetValue(key, out value!);
 
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
     /// <summary>
     /// Ensures that the bidirectional dictionary can hold up to 'capacity' entries without any further expansion of its backing storage.
     /// </summary>
@@ -392,7 +369,6 @@ public class BidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TK
         _baseDictionary.TrimExcess(capacity);
         Inverse._baseDictionary.TrimExcess(capacity);
     }
-#endif
 
     /// <summary>
     /// Returns a read-only <see cref="ReadOnlyBidirectionalDictionary{TKey, TValue}"></see> wrapper for the current dictionary.

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using SpeedrunTimer.DataStructures;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-#if NET6_0_OR_GREATER
-using System.Runtime.InteropServices;
-#endif
+namespace SpeedrunTimer.Utils;
+#nullable enable
 
-namespace System.Linq;
-
-public static partial class Enumerable
+public static partial class SpeedrunUtil
 {
     /// <summary>
     /// Creates a <see cref="BidirectionalDictionary{TKey,TValue}"/> from an <see cref="IEnumerable{T}"/> according to the default comparers for the key and value types.
@@ -131,7 +131,6 @@ public static partial class Enumerable
 
         var capacity = 0;
 
-#if NET6_0_OR_GREATER
         if (source.TryGetNonEnumeratedCount(out capacity))
         {
             if (capacity == 0)
@@ -146,14 +145,13 @@ public static partial class Enumerable
 
             if (source is List<TSource> list)
             {
-                ReadOnlySpan<TSource> span = CollectionsMarshal.AsSpan(list);
+                ReadOnlySpan<TSource> span = new([.. list]);
                 return SpanToBidirectionalDictionary(span, keySelector, keyComparer, valueComparer);
             }
         }
-#endif
 
         var bidirectionalDictionary = new BidirectionalDictionary<TKey, TSource>(capacity, keyComparer, valueComparer);
-        
+
         foreach (TSource element in source)
         {
             bidirectionalDictionary.Add(keySelector(element), element);
@@ -162,7 +160,6 @@ public static partial class Enumerable
         return bidirectionalDictionary;
     }
 
-#if NET6_0_OR_GREATER
     private static BidirectionalDictionary<TKey, TSource> SpanToBidirectionalDictionary<TSource, TKey>(
         ReadOnlySpan<TSource> source,
         Func<TSource, TKey> keySelector,
@@ -172,7 +169,7 @@ public static partial class Enumerable
         where TSource : notnull
     {
         var bidirectionalDictionary = new BidirectionalDictionary<TKey, TSource>(source.Length, keyComparer, valueComparer);
-        
+
         foreach (TSource element in source)
         {
             bidirectionalDictionary.Add(keySelector(element), element);
@@ -180,7 +177,6 @@ public static partial class Enumerable
 
         return bidirectionalDictionary;
     }
-#endif
 
     public static BidirectionalDictionary<TKey, TElement> ToBidirectionalDictionary<TSource, TKey, TElement>(
         this IEnumerable<TSource> source,
@@ -218,7 +214,6 @@ public static partial class Enumerable
 
         var capacity = 0;
 
-#if NET6_0_OR_GREATER
         if (source.TryGetNonEnumeratedCount(out capacity))
         {
             if (capacity == 0)
@@ -233,11 +228,10 @@ public static partial class Enumerable
 
             if (source is List<TSource> list)
             {
-                ReadOnlySpan<TSource> span = CollectionsMarshal.AsSpan(list);
+                ReadOnlySpan<TSource> span = new([.. list]);
                 return SpanToBidirectionalDictionary(span, keySelector, elementSelector, keyComparer, valueComparer);
             }
         }
-#endif
 
         var bidirectionalDictionary = new BidirectionalDictionary<TKey, TElement>(capacity, keyComparer, valueComparer);
 
@@ -249,7 +243,6 @@ public static partial class Enumerable
         return bidirectionalDictionary;
     }
 
-#if NET6_0_OR_GREATER
     private static BidirectionalDictionary<TKey, TElement> SpanToBidirectionalDictionary<TSource, TKey, TElement>(
         ReadOnlySpan<TSource> source,
         Func<TSource, TKey> keySelector,
@@ -260,7 +253,7 @@ public static partial class Enumerable
         where TElement : notnull
     {
         var bidirectionalDictionary = new BidirectionalDictionary<TKey, TElement>(source.Length, keyComparer, valueComparer);
-        
+
         foreach (TSource element in source)
         {
             bidirectionalDictionary.Add(keySelector(element), elementSelector(element));
@@ -268,5 +261,4 @@ public static partial class Enumerable
 
         return bidirectionalDictionary;
     }
-#endif
 }

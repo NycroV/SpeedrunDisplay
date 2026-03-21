@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace System.Collections.ObjectModel;
+namespace SpeedrunTimer.DataStructures;
+#nullable enable
 
 /// <summary>
 /// Represents a read-only dictionary with non-null unique values that provides access to an inverse read-only dictionary.
 /// </summary>
 /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
 /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-[DebuggerTypeProxy(typeof(DictionaryDebugView<,>))]
-[DebuggerDisplay("Count = {Count}")]
 public class ReadOnlyBidirectionalDictionary<TKey, TValue> : IBidirectionalDictionary<TKey, TValue>, IReadOnlyBidirectionalDictionary<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
@@ -48,32 +48,24 @@ public class ReadOnlyBidirectionalDictionary<TKey, TValue> : IBidirectionalDicti
     /// <exception cref="KeyNotFoundException"></exception>
     public TValue this[TKey key] => _baseDictionary[key];
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IBidirectionalDictionary<TValue, TKey> IBidirectionalDictionary<TKey, TValue>.Inverse => Inverse;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IReadOnlyBidirectionalDictionary<TValue, TKey> IReadOnlyBidirectionalDictionary<TKey, TValue>.Inverse => Inverse;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     TValue IDictionary<TKey, TValue>.this[TKey key]
     {
         get => this[key];
         set => throw new NotSupportedException();
     }
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     ICollection<TKey> IDictionary<TKey, TValue>.Keys => Keys;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     ICollection<TValue> IDictionary<TKey, TValue>.Values => Values;
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
-    
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+
     bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => true;
 
     #endregion
@@ -89,13 +81,13 @@ public class ReadOnlyBidirectionalDictionary<TKey, TValue> : IBidirectionalDicti
     public ReadOnlyBidirectionalDictionary(IBidirectionalDictionary<TKey, TValue> bidirectionalDictionary)
     {
         _baseDictionary = bidirectionalDictionary ?? throw new ArgumentNullException(nameof(bidirectionalDictionary));
-        Inverse         = new ReadOnlyBidirectionalDictionary<TValue, TKey>(this);
+        Inverse = new ReadOnlyBidirectionalDictionary<TValue, TKey>(this);
     }
 
     private ReadOnlyBidirectionalDictionary(ReadOnlyBidirectionalDictionary<TValue, TKey> inverse)
     {
         _baseDictionary = inverse._baseDictionary.Inverse;
-        Inverse         = inverse;
+        Inverse = inverse;
     }
 
     #endregion

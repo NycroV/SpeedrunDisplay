@@ -1,4 +1,6 @@
-﻿namespace System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+namespace SpeedrunTimer.DataStructures;
 
 public interface IReadOnlyBidirectionalDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull

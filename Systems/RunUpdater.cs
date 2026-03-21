@@ -9,7 +9,7 @@ namespace SpeedrunTimer.Systems
         // we need to account for that and cancel the current run.
         public override void OnEnterWorld()
         {
-            if (!SpeedrunTimer.AllCategories.ContainsKey(RunTracker.RunCategory!))
+            if (RunTracker.RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunTracker.RunCategory))
                 RunTracker.CancelRun();
         }
     }
