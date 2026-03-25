@@ -35,8 +35,7 @@ namespace SpeedrunTimer.Systems
                 return;
 
             layers.Insert(layerIndex, new LegacyGameInterfaceLayer(
-                "SpeedrunTimer: Timer Display", () =>
-                {
+                "SpeedrunTimer: Timer Display", () => {
                     DrawSpeedrunTimer(Main.spriteBatch, Main.ScreenSize.ToVector2());
                     return true;
                 }, InterfaceScaleType.None));
@@ -44,11 +43,38 @@ namespace SpeedrunTimer.Systems
 
         public static void DrawSpeedrunTimer(SpriteBatch spriteBatch, Vector2 screenSize)
         {
-            Vector2 drawCenter = screenSize * SpeedrunConfig.Instance.SpeedrunUIPos;
-            Vector2 drawSize = new Vector2(200f, 400f) * SpeedrunConfig.Instance.SpeedrunUIScale;
+            Vector2 drawTopCenter = screenSize * SpeedrunConfig.Instance.SpeedrunUIPos;
+            Vector2 drawSize = new Vector2(200f, 100f) * SpeedrunConfig.Instance.SpeedrunUIScale;
+            int splits = SpeedrunConfig.Instance.SplitsToShow;
 
-            Rectangle drawArea = CenteredRectangle(drawCenter, drawSize);
-            spriteBatch.DrawRectangle(drawArea, Color.Red, fill: true);
+            Rectangle drawArea = CenteredRectangle(drawTopCenter + new Vector2(0f, drawSize.Y * 0.5f), drawSize);
+            Vector2 splitSize = new(drawArea.Width, drawArea.Height * 0.375f);
+            int splitsOffset = (int)float.Ceiling(splitSize.Y * splits);
+
+            Rectangle titleBox = drawArea.CookieCutter(new(0f, -0.6f), new(0.95f, 0.3f));
+            Rectangle igtBox = drawArea.CookieCutter(new(0.4f, 0.35f), new(0.55f, 0.55f));
+            Rectangle rtaBox = drawArea.CookieCutter(new(-0.6f, 0.55f), new(0.35f, 0.35f));
+
+            drawArea.Height += splitsOffset;
+            igtBox.Y += splitsOffset;
+            rtaBox.Y += splitsOffset;
+
+            spriteBatch.DrawRectangle(drawArea, Color.Black * 0.45f, fill: true);
+            spriteBatch.DrawRectangle(titleBox, Color.Red);
+            spriteBatch.DrawRectangle(igtBox, Color.Lime);
+            spriteBatch.DrawRectangle(rtaBox, Color.Yellow);
+
+            if (splits == 0)
+                return;
+
+            Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.5f), Vector2.One);
+            spriteBatch.DrawRectangle(splitBox, Color.Blue);
+
+            for (int i = 1; i < splits; i++)
+            {
+                splitBox = splitBox.CookieCutter(new(0f, 2.5f), Vector2.One);
+                spriteBatch.DrawRectangle(splitBox, Color.Blue);
+            }
         }
     }
 }

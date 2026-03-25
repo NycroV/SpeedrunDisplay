@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace SpeedrunTimer.Utils
@@ -37,6 +38,20 @@ namespace SpeedrunTimer.Utils
             spriteBatch.Draw(pixel, new Rectangle(rectangle.Left - halfStroke, rectangle.Top - halfStroke, (int)stroke, rectangle.Height + (int)stroke), color);
             spriteBatch.Draw(pixel, new Rectangle(rectangle.Left - halfStroke, rectangle.Bottom - halfStroke, rectangle.Width + (int)stroke, (int)stroke), color);
             spriteBatch.Draw(pixel, new Rectangle(rectangle.Right - halfStroke, rectangle.Top - halfStroke, (int)stroke, rectangle.Height + (int)stroke), color);
+        }
+
+        /// <summary>
+        /// Creates a new rectangle from a "cookie cutter" slice of another rectangle.<br/>
+        /// <br/>
+        /// <paramref name="center"/> is the position within the given rectangle that you want to center your new rectangle. <c>-1f</c> for the top/left, <c>1f</c> for the bottom/right.<br/>
+        /// <paramref name="size"/> is the scale of your new rectangle, based on the size of the given rectangle. <c>1f</c> is the same size as the given rectangle, <c>0.5f</c> is half the size.<br/>
+        /// <br/>
+        /// Both <paramref name="center"/> and <paramref name="size"/> can be beyond the bounds of the given rectangle (ie. <paramref name="center"/> can be greater/less than <c>1f</c>/<c>-1f</c>, <paramref name="size"/> can be greater/less than <c>1f</c>/<c>0f</c>.
+        /// </summary>
+        public static Rectangle CookieCutter(this Rectangle rectangle, Vector2 center, Vector2 size)
+        {
+            Vector2 cookieCenter = rectangle.Center.ToVector2() + (center * rectangle.Size() * 0.5f);
+            return CenteredRectangle(cookieCenter, size * rectangle.Size());
         }
     }
 }
