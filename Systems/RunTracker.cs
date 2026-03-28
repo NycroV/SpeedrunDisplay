@@ -20,7 +20,7 @@ public class RunTracker : ModSystem
     /// <summary>
     /// Indicates the currently active run category, if a run is active. Otherwise <see langword="null"/>.
     /// </summary>
-    public static string? RunCategory { get; internal set; } = null;
+    public static string RunCategory { get; internal set; } = null;
 
     #endregion
 
