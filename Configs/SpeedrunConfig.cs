@@ -16,12 +16,7 @@ namespace SpeedrunTimer.Configs
         [JsonIgnore]
         public Vector2 SpeedrunUIPos => new(SpeedrunUIPosX, SpeerunUIPosY);
 
-        [DefaultValue(true)]
-        public bool LockSpeedrunUIPos { get; set; }
-
-        [DefaultValue(1f)]
-        public float SpeedrunUIScale { get; set; }
-
+        [Header("TODO-MainConfig")]
         [DefaultValue(6)]
         public int SplitsToShow { get; set; }
 
@@ -30,6 +25,16 @@ namespace SpeedrunTimer.Configs
 
         [DefaultValue(false)]
         public bool AutoRestart { get; set; }
+
+        [DefaultValue(false)]
+        public bool ShowOnTop { get; set; }
+
+        [Header("TODO-DisplayConfig")]
+        [DefaultValue(true)]
+        public bool LockSpeedrunUIPos { get; set; }
+
+        [DefaultValue(1f)]
+        public float SpeedrunUIScale { get; set; }
 
         [DefaultValue(0.9f)]
         public float SpeedrunUIPosX { get; set; }

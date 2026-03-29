@@ -6,6 +6,7 @@ using SpeedrunTimer.Configs;
 using SpeedrunTimer.DataStructures;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
@@ -26,8 +27,13 @@ namespace SpeedrunTimer.Systems
             try
             {
                 ILCursor c = new(il);
-                c.GotoNext(i => i.MatchCall("Terraria.ModLoader.UI.Interface", "AddMenuButtons"));
-                c.Index++;
+
+                var drawCursorMethod = typeof(Main).GetMethod(nameof(Main.DrawCursor), BindingFlags.Static | BindingFlags.Public, [typeof(Vector2), typeof(bool)]);
+                c.GotoNext(i => i.MatchCall(drawCursorMethod));
+
+                var spriteBatchEndMethod = typeof(SpriteBatch).GetMethod(nameof(SpriteBatch.End), BindingFlags.Instance | BindingFlags.Public, Type.EmptyTypes);
+                c.GotoPrev(i => i.MatchCallvirt(spriteBatchEndMethod));
+
                 c.EmitDelegate(DrawMenuRunButtons);
             }
             catch
@@ -38,9 +44,9 @@ namespace SpeedrunTimer.Systems
 
         private void DrawMenuRunButtons()
         {
+            Main.spriteBatch.End();
             Main.spriteBatch.Begin();
             DrawSpeedrunTimer(Main.spriteBatch, new Vector2(Main.graphics.PreferredBackBufferWidth, Main.graphics.PreferredBackBufferHeight));
-            Main.spriteBatch.End();
 
             // TODO: Draw run start/cancel buttons
         }
@@ -50,7 +56,8 @@ namespace SpeedrunTimer.Systems
             if (!DisplayTimer)
                 return;
 
-            int layerIndex = 0;// layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
+            int layerIndex = SpeedrunConfig.Instance.ShowOnTop ? layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory")) : 0;
+
             if (layerIndex == -1)
                 return;
 
@@ -61,6 +68,7 @@ namespace SpeedrunTimer.Systems
                 }, InterfaceScaleType.None));
         }
 
+        // TODO: Return covered rectangle
         public static void DrawSpeedrunTimer(SpriteBatch spriteBatch, Vector2 screenSize)
         {
             Vector2 drawTopCenter = screenSize * SpeedrunConfig.Instance.SpeedrunUIPos;
