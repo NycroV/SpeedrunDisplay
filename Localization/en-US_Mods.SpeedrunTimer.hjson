@@ -1,6 +1,6 @@
 Categories: {
-	AnyPercent: Any%
-	AllBosses: All Bosses
+	AnyPercent: Vanilla: Any%
+	AllBosses: Vanilla: AllBosses%
 }
 
 Splits: {

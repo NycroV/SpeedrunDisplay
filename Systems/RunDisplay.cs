@@ -29,7 +29,7 @@ public class RunDisplay : ModSystem
 
     private static bool cancellingRun = false;
     private static bool startingRun = false;
-    private static int startingRunType = 0;
+    private static int startingRunType = -1;
 
     private static string UIText(string localization) => Language.GetTextValue("Mods.SpeedrunTimer.UI." + localization);
 
@@ -57,6 +57,9 @@ public class RunDisplay : ModSystem
 
     private static void DrawMenuRunButtons()
     {
+        if (!RunTracker.CategoriesValidated)
+            return;
+
         Main.spriteBatch.End();
         Main.spriteBatch.Begin();
 
@@ -179,7 +182,21 @@ public class RunDisplay : ModSystem
         Main.spriteBatch.DrawOutlinedStringInRectangle(startNewRun, JetbrainsMono, startNewHovered ? Color.Yellow : Color.White, Color.Black, UIText("NewRun"));
 
         if (mouseClicked && startNewHovered)
+        {
             startingRun = true;
+
+            if (startingRunType >= 0)
+                return;
+
+            for (int i = 0; i < SpeedrunTimer.AllCategories.Count; i++)
+            {
+                if (SpeedrunConfig.Instance.DefaultRunCategory != Language.GetTextValue(SpeedrunTimer.AllCategories.ElementAt(i).Value.LocalizationKey))
+                    continue;
+
+                startingRunType = i;
+                break;
+            }
+        }
     }
 
     public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)

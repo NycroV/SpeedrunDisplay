@@ -1,1 +1,5 @@
-This description will show up on the steam page, check out https://steamcommunity.com/comment/Guide/formattinghelp.
+Adds a visual speedrun timer in-game.
+
+By default, has support for Vanilla Any% and AllBosses% run types, but mod authors are able to add their own categories and splits via mod calls.
+
+This timer does not affect gameplay in any way shape or form, and serves only as an automatic (and perfectly accurate) info display.

@@ -21,6 +21,7 @@ public class SpeedrunConfig : ModConfig
     public int SplitsToShow { get; set; }
 
     [DefaultValue("Any%")]
+    [CustomModConfigItem(typeof(RunCategoryStringSelectionElement))]
     public string DefaultRunCategory { get; set; }
 
     [DefaultValue(false)]

@@ -23,8 +23,7 @@ public class SpeedrunTimer : Mod
     /// </summary>
     public static readonly BidirectionalDictionary<string, Category> AllCategories = new();
 
-    // Load vanilla splits and categories
-    public override void PostSetupContent()
+    public override void Load()
     {
         AllSplits.AddRange(new Dictionary<string, Split>()
         {
@@ -71,11 +70,11 @@ public class SpeedrunTimer : Mod
     /// <param name="splitNameLocalization">The localization key for this split's name in the timer UI.</param>
     /// <param name="splitIcon">A small icon to display by the split name in the timer UI.</param>
     /// <param name="completionCheck">A function that returns <see langword="true"/> when the split should be triggered.</param>
-    public static object AddSplit(string splitKey, string splitNameLocalization, Asset<Texture2D> splitIcon, Func<bool> completionCheck)
+    public static Split AddSplit(string splitKey, string splitNameLocalization, Asset<Texture2D> splitIcon, Func<bool> completionCheck)
     {
         Split split = new(splitNameLocalization, splitIcon, completionCheck);
         AllSplits.Add(splitKey, split);
-        return null!;
+        return split;
     }
 
     /// <summary>
@@ -84,11 +83,11 @@ public class SpeedrunTimer : Mod
     /// <param name="categoryKey">The unique key to register this category with.</param>
     /// <param name="categoryLocalization">The localization key for this split's name in the timer UI.</param>
     /// <param name="completionSplit">The split that, when triggered, marks run completion.</param>
-    public static object AddCategory(string categoryKey, string categoryLocalization, Split completionSplit)
+    public static Category AddCategory(string categoryKey, string categoryLocalization, Split completionSplit)
     {
         Category category = new(categoryLocalization, completionSplit);
         AllCategories.Add(categoryKey, category);
-        return null!;
+        return category;
     }
 
     public override object Call(params object[] args)

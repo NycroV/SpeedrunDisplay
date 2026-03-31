@@ -1,16 +1,24 @@
-﻿using SpeedrunTimer.DataStructures;
+﻿using SpeedrunTimer.Config;
+using SpeedrunTimer.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Config;
 
 namespace SpeedrunTimer.Systems;
 
 public class RunTracker : ModSystem
 {
     #region Run Type
+
+    /// <summary>
+    /// Indicates whether post-load validation checks have been run for categories.
+    /// </summary>
+    public static bool CategoriesValidated { get; private set; } = false;
 
     /// <summary>
     /// Indicates whether a run is currently active.
@@ -59,6 +67,16 @@ public class RunTracker : ModSystem
 
     internal static string ActiveRunFilePath => Path.Combine(Main.SavePath, "SpeedrunTimer", "ActiveRun.txt");
 
+    // Re-loads the last active run, if there was one.
+    public override void PostSetupContent() => TryLoadActiveRun();
+
+    // Verifies that the last active run type is available, and that the configured default run type is valid
+
+    public override void Load() => MonoModHooks.Add(typeof(ConfigManager).GetMethod("FinishSetup", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static, Type.EmptyTypes), ValidateCategoryTypes);
+
+    // Saves the currently active run, if there is one.
+    public override void Unload() => TrySaveActiveRun();
+
     internal static void StartRun(string runCategory)
     {
         RunCategory = runCategory;
@@ -97,9 +115,6 @@ public class RunTracker : ModSystem
         CurrentSplits.Clear();
         AvailableSplits.Clear();
     }
-
-    // Re-loads the last active run, if there was one.
-    public override void PostSetupContent() => TryLoadActiveRun();
 
     internal static void TryLoadActiveRun()
     {
@@ -146,9 +161,6 @@ public class RunTracker : ModSystem
             runSplit.Register();
     }
 
-    // Saves the currently active run, if there is one.
-    public override void Unload() => TrySaveActiveRun();
-
     internal static void TrySaveActiveRun()
     {
         if (!RunActive)
@@ -172,5 +184,21 @@ public class RunTracker : ModSystem
             Directory.CreateDirectory(directory);
 
         File.WriteAllText(ActiveRunFilePath, activeRun);
+    }
+
+    internal static void ValidateCategoryTypes(Action orig)
+    {
+        orig();
+
+        if (RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunCategory))
+            RunCategory = null;
+
+        if (!SpeedrunTimer.AllCategories.Values.Any(c => Language.GetTextValue(c.LocalizationKey) == SpeedrunConfig.Instance.DefaultRunCategory))
+        {
+            SpeedrunConfig.Instance.DefaultRunCategory = Language.GetTextValue(SpeedrunTimer.AllCategories.First().Value.LocalizationKey);
+            SpeedrunConfig.Instance.SaveChanges();
+        }
+
+        CategoriesValidated = true;
     }
 }
