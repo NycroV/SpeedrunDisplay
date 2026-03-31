@@ -1,16 +1,90 @@
-﻿using System;
+﻿using SpeedrunTimer.Config;
+using SpeedrunTimer.DataStructures;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace SpeedrunTimer.Systems;
 
-public class RunCategorySafetyCheck : ModPlayer
+public class AutoRestartPlayerCheck : ModPlayer
 {
-    // If the player has unloaded the mod from which the current active run was registered,
-    // we need to account for that and cancel the current run.
+    public const string LoadedPlayerKey = "SpeedrunPlayerID";
+
+    public static int LoadedPlayerID { get; private set; } = -1;
+
+    public static int TotalLoadedPlayers { get; private set; } = 0;
+
+    public static int LastLoadedPlayer { get; private set; } = -1;
+
+    public override void LoadData(TagCompound tag)
+    {
+        if (tag.TryGet(LoadedPlayerKey, out int id))
+            LoadedPlayerID = id;
+
+        else
+            LoadedPlayerID = -1;
+    }
+
+    public override void SaveData(TagCompound tag)
+    {
+        if (LoadedPlayerID == -1)
+            LoadedPlayerID = TotalLoadedPlayers++;
+
+        tag.Set(LoadedPlayerKey, LoadedPlayerID);
+        LastLoadedPlayer = LoadedPlayerID;
+    }
+
     public override void OnEnterWorld()
     {
-        if (RunTracker.RunCategory is not null && !SpeedrunTimer.AllCategories.ContainsKey(RunTracker.RunCategory))
-            RunTracker.CancelRun();
+        if (LastLoadedPlayer == -1 || AutoRestartWorldCheck.LastLoadedWorld == -1)
+            return;
+
+        if (LoadedPlayerID == LastLoadedPlayer || AutoRestartWorldCheck.LoadedWorldID == AutoRestartWorldCheck.LastLoadedWorld)
+            return;
+
+        RunTracker.CancelRun();
+
+        foreach (KeyValuePair<string, Category> kvp in SpeedrunTimer.AllCategories)
+        {
+            if (SpeedrunConfig.Instance.DefaultRunCategory != Language.GetTextValue(kvp.Value.LocalizationKey))
+                continue;
+
+            RunTracker.StartRun(kvp.Key);
+            break;
+        }
+    }
+}
+
+public class AutoRestartWorldCheck : ModSystem
+{
+    public const string LoadedWorldKey = "SpeedrunWorldID";
+
+    public static int LoadedWorldID { get; private set; } = -1;
+
+    public static int TotalLoadedWorlds { get; private set; } = 0;
+
+    public static int LastLoadedWorld { get; private set; } = -1;
+
+    public override void LoadWorldData(TagCompound tag)
+    {
+        if (tag.TryGet(LoadedWorldKey, out int id))
+            LoadedWorldID = id;
+
+        else
+            LoadedWorldID = -1;
+    }
+
+    public override void SaveWorldData(TagCompound tag)
+    {
+        if (LoadedWorldID == -1)
+            LoadedWorldID = TotalLoadedWorlds++;
+
+        tag.Set(LoadedWorldKey, LoadedWorldID);
+        LastLoadedWorld = LoadedWorldID;
     }
 }
 
