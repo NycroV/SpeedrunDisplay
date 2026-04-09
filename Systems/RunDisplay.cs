@@ -5,6 +5,7 @@ using MonoMod.Cil;
 using ReLogic.Content;
 using SpeedrunTimer.Config;
 using SpeedrunTimer.DataStructures;
+using SpeedrunTimer.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,7 +202,7 @@ public class RunDisplay : ModSystem
 
     public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
     {
-        if (!DisplayTimer || !RunTracker.RunActive)
+        if (!DisplayTimer || (!RunTracker.RunActive && RunTracker.LastCompletedRun is null))
             return;
 
         int layerIndex = SpeedrunConfig.Instance.ShowOnTop ? layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory")) : 0;
@@ -254,8 +255,9 @@ public class RunDisplay : ModSystem
 
         spriteBatch.DrawOutlinedStringInRectangle(titleBox, JetbrainsMono, Color.White, Color.Black, runTitle);
 
+        Color igtColor = RunTracker.LastCompletedRun is null ? Color.White : Main.DiscoColor;
         string igt = $"{(igtTime.Hours > 0 ? $"{(int)igtTime.TotalHours}:" : "")}{(igtTime.Hours > 0 ? igtTime.ToString("mm") : igtTime.ToString("%m"))}:{igtTime:ss\\.fff}";
-        spriteBatch.DrawOutlinedStringInRectangle(igtBox, JetbrainsMono, Color.White, Color.Black, igt, alignment: Utils.TextAlignment.Right);
+        spriteBatch.DrawOutlinedStringInRectangle(igtBox, JetbrainsMono, igtColor, Color.Black, igt, alignment: Utils.TextAlignment.Right);
 
         string rta = $"{(rtaTime.Hours > 0 ? $"{(int)rtaTime.TotalHours}:" : "")}{(rtaTime.Hours > 0 ? rtaTime.ToString("mm") : rtaTime.ToString("%m"))}:{rtaTime:ss}";
         spriteBatch.DrawOutlinedStringInRectangle(rtaBox, JetbrainsMono, Color.DarkGray, Color.Black, rta, alignment: Utils.TextAlignment.Right);
@@ -268,10 +270,6 @@ public class RunDisplay : ModSystem
             Rectangle iconArea = box.CookieCutter(new(-0.85f, 0f), new(0.17f, 1f));
             Rectangle textArea = box.CookieCutter(new(-0.14f, 0f), new(0.5f, 1f));
             Rectangle timeArea = box.CookieCutter(new(0.7f, 0f), new(0.3f, 1f));
-
-            //spriteBatch.DrawRectangle(iconArea, Color.Red);
-            //spriteBatch.DrawRectangle(textArea, Color.Yellow);
-            //spriteBatch.DrawRectangle(timeArea, Color.Lime);
 
             if (!runSplit.HasValue)
             {
@@ -290,19 +288,23 @@ public class RunDisplay : ModSystem
 
             spriteBatch.Draw(splitIcon, iconArea.Center.ToVector2(), null, Color.White, 0f, splitIcon.Size() * 0.5f, scale, SpriteEffects.None, 0f);
             spriteBatch.DrawOutlinedStringInRectangle(textArea, JetbrainsMono, Color.White, Color.Black, splitText, alignment: Utils.TextAlignment.Left);
-            spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, 1f, alignment: Utils.TextAlignment.Right);
+            spriteBatch.DrawOutlinedStringInRectangle(timeArea, JetbrainsMono, Color.White, Color.Black, splitTime, alignment: Utils.TextAlignment.Right);
         }
 
         int splitCount = Math.Min(splits, RunTracker.LastCompletedRun?.Splits.Count ?? RunTracker.CurrentSplits?.Count ?? 0);
         RunSplit[] runSplits = splitCount > 0 ? [..RunTracker.LastCompletedRun?.Splits.TakeLast(splitCount) ?? RunTracker.CurrentSplits.TakeLast(splitCount)] : [];
 
-        Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.5f), Vector2.One);
+        Rectangle splitBox = titleBox.CookieCutter(new(0f, 2.6f), Vector2.One);
         RunSplit? split = splitCount > 0 ? runSplits[0] : null;
         DrawSplit(splitBox, split);
 
         for (int i = 1; i < splits; i++)
         {
             splitBox = splitBox.CookieCutter(new(0f, 2.5f), Vector2.One);
+
+            if (i % 2 == 1)
+                spriteBatch.DrawRectangle(splitBox.CookieCutter(Vector2.Zero, new(1.05f, 1.02f)), Color.Black * 0.2f, fill: true);
+
             split = splitCount > i ? runSplits[i] : null;
             DrawSplit(splitBox, split);
         }

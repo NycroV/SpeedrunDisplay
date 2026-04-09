@@ -11,7 +11,21 @@ public class SpeedrunConfig : ModConfig
     public override ConfigScope Mode => ConfigScope.ClientSide;
 
     [JsonIgnore]
-    public static SpeedrunConfig Instance => ModContent.GetInstance<SpeedrunConfig>();
+    private static SpeedrunConfig _configCache = null;
+
+    [JsonIgnore]
+    public static SpeedrunConfig Instance
+    {
+        get
+        {
+            var conf = ModContent.GetInstance<SpeedrunConfig>();
+            
+            if (conf is not null)
+                _configCache = conf;
+
+            return _configCache;
+        }
+    }
 
     [JsonIgnore]
     public Vector2 SpeedrunUIPos => new(SpeedrunUIPosX, SpeedrunUIPosY);

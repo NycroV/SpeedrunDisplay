@@ -67,7 +67,11 @@ public class RunTracker : ModSystem
     internal static readonly string ActiveRunFilePath = Path.Combine(Main.SavePath, "SpeedrunTimer", "ActiveRun.txt");
 
     // Re-loads the last active run, if there was one.
-    public override void PostSetupContent() => TryLoadActiveRun();
+    public override void PostSetupContent()
+    {
+        TryLoadActiveRun();
+        SpeedrunConfig.Instance.GetType(); // Force a config cache by fetching the property, we don't actually need it
+    }
 
     // Verifies that the last active run type is available, and that the configured default run type is valid
 
@@ -106,7 +110,7 @@ public class RunTracker : ModSystem
     internal static void CompleteRun()
     {
         var category = SpeedrunTimer.AllCategories[RunCategory!];
-        var splits = CurrentSplits.AsReadOnly();
+        var splits = CurrentSplits.ToArray().AsReadOnly();
         TimeSpan rta = DateTime.UtcNow - RTA_RunStart;
         TimeSpan igt = TimeSpan.FromSeconds(IGT_FrameCounter / 60f);
 

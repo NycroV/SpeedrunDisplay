@@ -38,7 +38,7 @@ public class AutoRestartCheck : ModPlayer
         LastLoadedPlayerPath ??= playerPath;
         LastLoadedWorldPath ??= worldPath;
 
-        if (LastLoadedPlayerPath != playerPath && LastLoadedWorldPath != worldPath)
+        if (LastLoadedPlayerPath != playerPath && LastLoadedWorldPath != worldPath && SpeedrunConfig.Instance.AutoRestart)
         {
             RunTracker.CancelRun();
             RunTracker.StartRun(SpeedrunConfig.Instance.DefaultRunCategory);

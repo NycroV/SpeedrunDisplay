@@ -25,31 +25,34 @@ public class SpeedrunTimer : Mod
 
     public override void Load()
     {
+        static Asset<Texture2D> BossHead(int bossId) => ModContent.Request<Texture2D>($"Terraria/Images/NPC_Head_Boss_{bossId}");
+        static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunTimer/Assets/Textures/{name}");
+
         AllSplits.AddRange(new Dictionary<string, Split>()
         {
-            ["KingSlime"] = new(GetLocalizationKey("Splits.KingSlime"), null!, () => NPC.downedSlimeKing),
-            ["EyeOfCthulhu"] = new(GetLocalizationKey("Splits.EyeOfCthulhu"), null!, () => NPC.downedBoss1),
-            ["EvilBoss"] = new(GetLocalizationKey("Splits.EvilBoss"), null!, () => NPC.downedBoss2),
-            ["QueenBee"] = new(GetLocalizationKey("Splits.QueenBee"), null!, () => NPC.downedQueenBee),
-            ["Deerclops"] = new(GetLocalizationKey("Splits.Deerclops"), null!, () => NPC.downedDeerclops),
-            ["Skeletron"] = new(GetLocalizationKey("Splits.Skeletron"), null!, () => NPC.downedBoss3),
-            ["WallOfFlesh"] = new(GetLocalizationKey("Splits.WallOfFlesh"), null!, () => Main.hardMode),
-            ["QueenSlime"] = new(GetLocalizationKey("Splits.QueenSlime"), null!, () => NPC.downedQueenSlime),
-            ["TheDestroyer"] = new(GetLocalizationKey("Splits.TheDestroyer"), null!, () => NPC.downedMechBoss1),
-            ["TheTwins"] = new(GetLocalizationKey("Splits.TheTwins"), null!, () => NPC.downedMechBoss2),
-            ["SkeletronPrime"] = new(GetLocalizationKey("Splits.SkeletronPrime"), null!, () => NPC.downedMechBoss3),
-            ["Plantera"] = new(GetLocalizationKey("Splits.Plantera"), null!, () => NPC.downedPlantBoss),
-            ["Golem"] = new(GetLocalizationKey("Splits.Golem"), null!, () => NPC.downedGolemBoss),
-            ["DukeFishron"] = new(GetLocalizationKey("Splits.DukeFishron"), null!, () => NPC.downedFishron),
-            ["EmpressOfLight"] = new(GetLocalizationKey("Splits.EmpressOfLight"), null!, () => NPC.downedEmpressOfLight),
-            ["LunaticCultist"] = new(GetLocalizationKey("Splits.LunaticCultist"), null!, () => NPC.downedAncientCultist),
-            ["SolarPillar"] = new(GetLocalizationKey("Splits.SolarPillar"), null!, () => NPC.downedTowerSolar),
-            ["NebulaPillar"] = new(GetLocalizationKey("Splits.NebulaPillar"), null!, () => NPC.downedTowerNebula),
-            ["VortexPillar"] = new(GetLocalizationKey("Splits.VortexPillar"), null!, () => NPC.downedTowerVortex),
-            ["StardustPillar"] = new(GetLocalizationKey("Splits.StardustPillar"), null!, () => NPC.downedTowerStardust),
-            ["MoonLord"] = new(GetLocalizationKey("Splits.MoonLord"), null!, () => NPC.downedMoonlord),
+            ["KingSlime"] = new(GetLocalizationKey("Splits.KingSlime"), BossHead(7), () => NPC.downedSlimeKing),
+            ["EyeOfCthulhu"] = new(GetLocalizationKey("Splits.EyeOfCthulhu"), BossHead(0), () => NPC.downedBoss1),
+            ["EvilBoss"] = new(GetLocalizationKey("Splits.EvilBoss"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2),
+            ["QueenBee"] = new(GetLocalizationKey("Splits.QueenBee"), BossHead(14), () => NPC.downedQueenBee),
+            ["Deerclops"] = new(GetLocalizationKey("Splits.Deerclops"), SpeedrunAsset("DeerclopsIcon"), () => NPC.downedDeerclops),
+            ["Skeletron"] = new(GetLocalizationKey("Splits.Skeletron"), BossHead(19), () => NPC.downedBoss3),
+            ["WallOfFlesh"] = new(GetLocalizationKey("Splits.WallOfFlesh"), BossHead(22), () => Main.hardMode),
+            ["QueenSlime"] = new(GetLocalizationKey("Splits.QueenSlime"), BossHead(38), () => NPC.downedQueenSlime),
+            ["TheDestroyer"] = new(GetLocalizationKey("Splits.TheDestroyer"), BossHead(25), () => NPC.downedMechBoss1),
+            ["TheTwins"] = new(GetLocalizationKey("Splits.TheTwins"), BossHead(16), () => NPC.downedMechBoss2),
+            ["SkeletronPrime"] = new(GetLocalizationKey("Splits.SkeletronPrime"), BossHead(18), () => NPC.downedMechBoss3),
+            ["Plantera"] = new(GetLocalizationKey("Splits.Plantera"), BossHead(11), () => NPC.downedPlantBoss),
+            ["Golem"] = new(GetLocalizationKey("Splits.Golem"), BossHead(5), () => NPC.downedGolemBoss),
+            ["DukeFishron"] = new(GetLocalizationKey("Splits.DukeFishron"), BossHead(4), () => NPC.downedFishron),
+            ["EmpressOfLight"] = new(GetLocalizationKey("Splits.EmpressOfLight"), BossHead(37), () => NPC.downedEmpressOfLight),
+            ["LunaticCultist"] = new(GetLocalizationKey("Splits.LunaticCultist"), BossHead(31), () => NPC.downedAncientCultist),
+            ["SolarPillar"] = new(GetLocalizationKey("Splits.SolarPillar"), BossHead(27), () => NPC.downedTowerSolar),
+            ["NebulaPillar"] = new(GetLocalizationKey("Splits.NebulaPillar"), BossHead(29), () => NPC.downedTowerNebula),
+            ["VortexPillar"] = new(GetLocalizationKey("Splits.VortexPillar"), BossHead(28), () => NPC.downedTowerVortex),
+            ["StardustPillar"] = new(GetLocalizationKey("Splits.StardustPillar"), BossHead(30), () => NPC.downedTowerStardust),
+            ["MoonLord"] = new(GetLocalizationKey("Splits.MoonLord"), BossHead(8), () => NPC.downedMoonlord),
 
-            ["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), null!, () =>
+            ["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), SpeedrunAsset("AllBossesIcon"), () =>
                 NPC.downedMoonlord &&
                 NPC.downedAncientCultist &&
                 NPC.downedEmpressOfLight &&
