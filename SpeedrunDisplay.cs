@@ -87,6 +87,11 @@ public class SpeedrunDisplay : Mod
     public static Split GetSplit(string splitKey) => AllSplits[splitKey];
 
     /// <summary>
+    /// Retrieves a category via the key it was registered with.
+    /// </summary>
+    public static Category GetCategory(string categoryKey) => AllCategories[categoryKey];
+
+    /// <summary>
     /// Registers a custom split to be used in new speedrun categories.
     /// </summary>
     /// <param name="splitKey">The unique key to register this split with.</param>
@@ -119,6 +124,7 @@ public class SpeedrunDisplay : Mod
         {
             // API
             "getsplit" => GetSplit((args[1] as string)!),
+            "getcategory" => GetCategory((args[1] as string)!),
             "addsplit" => AddSplit((args[1] as string)!, (args[2] as string)!, (args[3] as Asset<Texture2D>)!, (args[4] as Func<bool>)!),
             "addcategory" => AddCategory((args[1] as string)!, (args[2] as string)!, (args[3] as Split)!),
 
