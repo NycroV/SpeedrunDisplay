@@ -296,8 +296,8 @@ public class RunDisplay : ModSystem
             }
 
             Split split = runSplit.Value.Split;
-            Texture2D splitIcon = split.Icon.Value;
-            float scale = float.Min((float)splitIcon.Width / iconArea.Width, (float)splitIcon.Height / iconArea.Height);
+            Texture2D splitIcon = SpeedrunDisplay.AllSplits.ElementAt((int)(Main.timeForVisualEffects / 60f % SpeedrunDisplay.AllSplits.Count)).Value.Icon.Value; //split.Icon.Value;
+            float scale = float.Min((float)iconArea.Width / splitIcon.Width, (float)iconArea.Height / splitIcon.Height);
 
             string splitText = split.LocalizationKey.Fetch();
             TimeSpan splitRunTime = TimeSpan.FromSeconds(runSplit.Value.RunTime / 60f);

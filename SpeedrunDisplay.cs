@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
 using ReLogic.Content;
 using SpeedrunDisplay.DataStructures;
+using SpeedrunDisplay.Systems;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -115,9 +117,21 @@ public class SpeedrunDisplay : Mod
     {
         return args[0].ToString()!.ToLower() switch
         {
+            // API
             "getsplit" => GetSplit((args[1] as string)!),
             "addsplit" => AddSplit((args[1] as string)!, (args[2] as string)!, (args[3] as Asset<Texture2D>)!, (args[4] as Func<bool>)!),
             "addcategory" => AddCategory((args[1] as string)!, (args[2] as string)!, (args[3] as Split)!),
+
+            // Info
+            "runactive" => RunTracker.RunActive,
+            "runcategory" => RunTracker.RunCategory,
+            "currentsplits" => RunTracker.CurrentSplits.Select(s => (AllSplits.Inverse[s.Split], s.SplitTime, s.RunTime)).ToArray(),
+            "lastcompletedrun" => RunTracker.LastCompletedRun is null ? null :
+                (AllCategories.Inverse[RunTracker.LastCompletedRun.Value.Category],
+                RunTracker.LastCompletedRun.Value.Splits.Select(s => (AllSplits.Inverse[s.Split], s.SplitTime, s.RunTime)).ToArray(),
+                RunTracker.LastCompletedRun.Value.IGT,
+                RunTracker.LastCompletedRun.Value.RTA),
+
             _ => throw new NotImplementedException($"Did not recognize {args[0]} as a valid mod call!")
         };
     }

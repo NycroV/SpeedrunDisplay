@@ -117,7 +117,7 @@ public class RunTracker : ModSystem
         RunCategory = null;
         RTA_RunStart = DateTime.UnixEpoch;
         IGT_FrameCounter = 0;
-        LastCompletedRun = new(category, splits, rta, igt);
+        LastCompletedRun = new(category, splits, igt, rta);
 
         CurrentSplits.Clear();
         AvailableSplits.Clear();
