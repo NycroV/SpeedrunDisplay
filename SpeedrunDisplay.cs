@@ -3,12 +3,15 @@ global using static SpeedrunDisplay.Utils.SpeedrunUtil;
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.Utils;
 using ReLogic.Content;
+using SpeedrunDisplay.Config;
 using SpeedrunDisplay.DataStructures;
 using SpeedrunDisplay.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.GameContent.Events;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace SpeedrunDisplay;
@@ -25,36 +28,53 @@ public class SpeedrunDisplay : Mod
     /// </summary>
     public static readonly BidirectionalDictionary<string, Category> AllCategories = new();
 
+    /// <summary>
+    /// SpeedrunDisplay mod instance.
+    /// </summary>
+    public static SpeedrunDisplay Instance { get; private set; } = null;
+
+    // Allows usage in static contexts
+    internal static string GetKey(string suffix) => Instance.GetLocalizationKey(suffix);
+    internal static Asset<Texture2D> BossHead(int bossId) => ModContent.Request<Texture2D>($"Terraria/Images/NPC_Head_Boss_{bossId}");
+    internal static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunDisplay/Assets/Textures/{name}");
+
+    // Used for config-based splits
+    internal static bool Extended() { return SpeedrunConfig.Instance.ExtendedVariants; }
+    internal static bool BundlePillars() { return SpeedrunConfig.Instance.BundlePillars; }
+    internal static bool BundleEvils() { return SpeedrunConfig.Instance.BundleEvils; }
+
     public override void Load()
     {
-        static Asset<Texture2D> BossHead(int bossId) => ModContent.Request<Texture2D>($"Terraria/Images/NPC_Head_Boss_{bossId}");
-        static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunDisplay/Assets/Textures/{name}");
+        Instance = this;
 
         AllSplits.AddRange(new Dictionary<string, Split>()
         {
-            ["KingSlime"] = new(GetLocalizationKey("Splits.KingSlime"), BossHead(7), () => NPC.downedSlimeKing),
-            ["EyeOfCthulhu"] = new(GetLocalizationKey("Splits.EyeOfCthulhu"), BossHead(0), () => NPC.downedBoss1),
-            ["EvilBoss"] = new(GetLocalizationKey("Splits.EvilBoss"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2),
-            ["QueenBee"] = new(GetLocalizationKey("Splits.QueenBee"), BossHead(14), () => NPC.downedQueenBee),
-            ["Deerclops"] = new(GetLocalizationKey("Splits.Deerclops"), SpeedrunAsset("DeerclopsIcon"), () => NPC.downedDeerclops),
-            ["Skeletron"] = new(GetLocalizationKey("Splits.Skeletron"), BossHead(19), () => NPC.downedBoss3),
-            ["WallOfFlesh"] = new(GetLocalizationKey("Splits.WallOfFlesh"), BossHead(22), () => Main.hardMode),
-            ["QueenSlime"] = new(GetLocalizationKey("Splits.QueenSlime"), BossHead(38), () => NPC.downedQueenSlime),
-            ["TheDestroyer"] = new(GetLocalizationKey("Splits.TheDestroyer"), BossHead(25), () => NPC.downedMechBoss1),
-            ["TheTwins"] = new(GetLocalizationKey("Splits.TheTwins"), BossHead(16), () => NPC.downedMechBoss2),
-            ["SkeletronPrime"] = new(GetLocalizationKey("Splits.SkeletronPrime"), BossHead(18), () => NPC.downedMechBoss3),
-            ["Plantera"] = new(GetLocalizationKey("Splits.Plantera"), BossHead(11), () => NPC.downedPlantBoss),
-            ["Golem"] = new(GetLocalizationKey("Splits.Golem"), BossHead(5), () => NPC.downedGolemBoss),
-            ["DukeFishron"] = new(GetLocalizationKey("Splits.DukeFishron"), BossHead(4), () => NPC.downedFishron),
-            ["EmpressOfLight"] = new(GetLocalizationKey("Splits.EmpressOfLight"), BossHead(37), () => NPC.downedEmpressOfLight),
-            ["LunaticCultist"] = new(GetLocalizationKey("Splits.LunaticCultist"), BossHead(31), () => NPC.downedAncientCultist),
-            ["SolarPillar"] = new(GetLocalizationKey("Splits.SolarPillar"), BossHead(27), () => NPC.downedTowerSolar),
-            ["NebulaPillar"] = new(GetLocalizationKey("Splits.NebulaPillar"), BossHead(29), () => NPC.downedTowerNebula),
-            ["VortexPillar"] = new(GetLocalizationKey("Splits.VortexPillar"), BossHead(28), () => NPC.downedTowerVortex),
-            ["StardustPillar"] = new(GetLocalizationKey("Splits.StardustPillar"), BossHead(30), () => NPC.downedTowerStardust),
-            ["MoonLord"] = new(GetLocalizationKey("Splits.MoonLord"), BossHead(8), () => NPC.downedMoonlord),
+            ["KingSlime"] = new(GetKey("Splits.KingSlime"), BossHead(7), () => NPC.downedSlimeKing),
+            ["EyeOfCthulhu"] = new(GetKey("Splits.EyeOfCthulhu"), BossHead(0), () => NPC.downedBoss1),
+            ["EaterOfWorlds"] = new(GetKey("Splits.EaterOfWorlds"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && !WorldGen.crimson && !BundleEvils()),
+            ["BrainOfCthulhu"] = new(GetKey("Splits.BrainOfCthulhu"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && WorldGen.crimson && !BundleEvils()),
+            ["EvilBoss"] = new(GetKey("Splits.EvilBoss"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && BundleEvils()),
+            ["QueenBee"] = new(GetKey("Splits.QueenBee"), BossHead(14), () => NPC.downedQueenBee),
+            ["Deerclops"] = new(GetKey("Splits.Deerclops"), SpeedrunAsset("DeerclopsIcon"), () => NPC.downedDeerclops),
+            ["Skeletron"] = new(GetKey("Splits.Skeletron"), BossHead(19), () => NPC.downedBoss3),
+            ["WallOfFlesh"] = new(GetKey("Splits.WallOfFlesh"), BossHead(22), () => Main.hardMode),
+            ["QueenSlime"] = new(GetKey("Splits.QueenSlime"), BossHead(38), () => NPC.downedQueenSlime),
+            ["TheDestroyer"] = new(GetKey("Splits.TheDestroyer"), BossHead(25), () => NPC.downedMechBoss1),
+            ["TheTwins"] = new(GetKey("Splits.TheTwins"), BossHead(16), () => NPC.downedMechBoss2),
+            ["SkeletronPrime"] = new(GetKey("Splits.SkeletronPrime"), BossHead(18), () => NPC.downedMechBoss3),
+            ["Plantera"] = new(GetKey("Splits.Plantera"), BossHead(11), () => NPC.downedPlantBoss),
+            ["Golem"] = new(GetKey("Splits.Golem"), BossHead(5), () => NPC.downedGolemBoss),
+            ["DukeFishron"] = new(GetKey("Splits.DukeFishron"), BossHead(4), () => NPC.downedFishron),
+            ["EmpressOfLight"] = new(GetKey("Splits.EmpressOfLight"), BossHead(37), () => NPC.downedEmpressOfLight),
+            ["LunaticCultist"] = new(GetKey("Splits.LunaticCultist"), BossHead(31), () => NPC.downedAncientCultist),
+            ["SolarPillar"] = new(GetKey("Splits.SolarPillar"), BossHead(27), () => NPC.downedTowerSolar && !BundlePillars()),
+            ["NebulaPillar"] = new(GetKey("Splits.NebulaPillar"), BossHead(29), () => NPC.downedTowerNebula && !BundlePillars()),
+            ["VortexPillar"] = new(GetKey("Splits.VortexPillar"), BossHead(28), () => NPC.downedTowerVortex && !BundlePillars()),
+            ["StardustPillar"] = new(GetKey("Splits.StardustPillar"), BossHead(30), () => NPC.downedTowerStardust && !BundlePillars()),
+            ["Celestials"] = new(GetKey("Splits.Celestials"), SpeedrunAsset(""), () => NPC.downedTowers && BundlePillars()),
+            ["MoonLord"] = new(GetKey("Splits.MoonLord"), BossHead(8), () => NPC.downedMoonlord),
 
-            ["AllBosses"] = new(GetLocalizationKey("Splits.AllBosses"), SpeedrunAsset("AllBossesIcon"), () =>
+            ["AllBosses"] = new(GetKey("Splits.AllBosses"), SpeedrunAsset("AllBossesIcon"), () =>
                 NPC.downedMoonlord &&
                 NPC.downedAncientCultist &&
                 NPC.downedEmpressOfLight &&
@@ -71,15 +91,74 @@ public class SpeedrunDisplay : Mod
                 NPC.downedQueenBee &&
                 NPC.downedBoss2 &&
                 NPC.downedBoss1 &&
-                NPC.downedSlimeKing)
+                NPC.downedSlimeKing),
+
+            // Split only available in "All Pre-HM Bosses" Category
+            ["AllPreHardmodeBosses"] = new(GetKey("Splits.AllPreHardmodeBosses"), SpeedrunAsset("AllBossesIcon"), () =>
+                RunTracker.RunCategory == "AllPreHardmodeBosses" &&
+                Main.hardMode &&
+                NPC.downedBoss3 &&
+                NPC.downedDeerclops &&
+                NPC.downedQueenBee &&
+                NPC.downedBoss2 &&
+                NPC.downedBoss1 &&
+                NPC.downedSlimeKing),
+
+            // Split only available in "Nights Edge" category
+            ["NightsEdge"] = new(GetKey("Splits.NightsEdge"), SpeedrunAsset(""), () => RunTracker.RunCategory == "NightsEdge" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.NightsEdge)),
+
+            // Extended splits
+            ["SlimeRain"] = new(GetKey("Splits.SlimeRain"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedSlimeRain),
+            ["BloodMoon"] = new(GetKey("Splits.BloodMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedBloodMoon),
+            ["GoblinArmy"] = new(GetKey("Splits.GoblinArmy"), SpeedrunAsset(""), () => Extended() && NPC.downedGoblins),
+
+            ["FrostLegion"] = new(GetKey("Splits.FrostLegion"), SpeedrunAsset(""), () => Extended() && NPC.downedFrost),
+            ["SolarEclipse"] = new(GetKey("Splits.SolarEclipse"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedSolarEclipse),
+            ["PirateInvasion"] = new(GetKey("Splits.PirateInvasion"), SpeedrunAsset(""), () => Extended() && NPC.downedPirates),
+            ["PumpkinMoon"] = new(GetKey("Splits.PumpkinMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedPumpkinMoon),
+            ["FrostMoon"] = new(GetKey("Splits.FrostMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedFrostMoon),
+            ["MartianMadness"] = new(GetKey("Splits.MartianMadness"), SpeedrunAsset(""), () => Extended() && NPC.downedMartians),
+
+            ["OldOnesArmyT1"] = new(GetKey("Splits.OOAT1"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT1),
+            ["OldOnesArmyT2"] = new(GetKey("Splits.OOAT2"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT2),
+            ["OldOnesArmyT3"] = new(GetKey("Splits.OOAT3"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT3),
+
+            ["CraftZenith"] = new(GetKey("Splits.CraftZenith"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "CraftZenith" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.Zenith)),
+            ["CraftTerraBlade"] = new(GetKey("Splits.CraftTerraBlade"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "CraftTerraBlade" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.TerraBlade)),
+            ["AllEventsAndBosses"] = new(GetKey("Splits.AllEventsAndBosses"), SpeedrunAsset(""), () => Extended() && false), // TODO
+
+            ["TorchGod"] = new(GetKey("Splits.TorchGod"), SpeedrunAsset(""), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
+            ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionAnyDifficulty),
+            ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset(""), () => Extended() && false), // TODO
+
+            ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),
+            ["DungeonGuardian"] = new(GetKey("Splits.DungeonGuardian"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedDungeonGuardian)
         });
 
         AllCategories.AddRange(new Dictionary<string, Category>()
         {
-            ["Any%"] = new(GetLocalizationKey("Categories.AnyPercent"), GetSplit("MoonLord")),
-            ["AllBosses%"] = new(GetLocalizationKey("Categories.AllBossesPercent"), GetSplit("AllBosses"))
+            ["MoonLord"] = new(GetKey("Categories.MoonLord"), GetSplit("MoonLord")),
+            ["AllBosses"] = new(GetKey("Categories.AllBosses"), GetSplit("AllBosses")),
+            ["AllPreHardmodeBosses"] = new(GetKey("Categories.AllPreHardmodeBosses"), GetSplit("AllPreHardmodeBosses")),
+            ["NightsEdge"] = new(GetKey("Categories.NightsEdge"), GetSplit("NightsEdge"))
+
+            // Extended categories are not included in the dictionary by default
+            // to prevent cluttering. They are added/removed in the config class.
         });
     }
+
+    public static Dictionary<string, Category> ExtendedCategories => new()
+    {
+        ["CraftZenith"] = new(GetKey("Categories.CraftZenith"), GetSplit("CraftZenith")),
+        ["CraftTerraBlade"] = new(GetKey("Categories.CraftTerraBlade"), GetSplit("CraftTerraBlade")),
+        ["AllEventsAndBosses"] = new(GetKey("Categories.AllEventsAndBosses"), GetSplit("AllEventsAndBosses")),
+        ["TorchGod"] = new(GetKey("Categories.TorchGod"), GetSplit("TorchGod")),
+        ["OldOnesArmy"] = new(GetKey("Categories.OldOnesArmy"), GetSplit("OldOnesArmy")),
+        ["AllAchievements"] = new(GetKey("Categories.AllAchievements"), GetSplit("AllAchievements")),
+        ["PlatinumCoin"] = new(GetKey("Categories.PlatinumCoin"), GetSplit("PlatinumCoin")),
+        ["DungeonGuardian"] = new(GetKey("Categories.DungeonGuardian"), GetSplit("DungeonGuardian")),
+        ["GoblinArmy"] = new(GetKey("Categories.GoblinArmy"), GetSplit("GoblinArmy"))
+    };
 
     /// <summary>
     /// Retrieves a split via the key it was registered with.

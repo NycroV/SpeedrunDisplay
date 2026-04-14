@@ -27,7 +27,7 @@ public class RunTracker : ModSystem
     /// <summary>
     /// Indicates the currently active run category, if a run is active. Otherwise <see langword="null"/>.
     /// </summary>
-    public static string RunCategory { get; internal set; } = null;
+    public static string RunCategory { get; private set; } = null;
 
     #endregion
 
@@ -36,12 +36,22 @@ public class RunTracker : ModSystem
     /// <summary>
     /// Indicates the exact start time (in UTC) of the current run, if a run is active. Otherwise <see cref="DateTime.UnixEpoch"/>.
     /// </summary>
-    public static DateTime RTA_RunStart { get; internal set; } = DateTime.UnixEpoch;
+    public static DateTime RTA_RunStart { get; private set; } = DateTime.UnixEpoch;
+
+    /// <summary>
+    /// Marks the RTA run start timestamp.
+    /// </summary>
+    internal static void MarkRunStart() => RTA_RunStart = DateTime.UtcNow;
 
     /// <summary>
     /// Indicates the number of elapsed game ticks of the current run, if a run is active. Otherwise <see langword="0"/>.
     /// </summary>
-    public static uint IGT_FrameCounter { get; internal set; } = 0u;
+    public static uint IGT_FrameCounter { get; private set; } = 0u;
+
+    /// <summary>
+    /// Increments the active run's frame counter.
+    /// </summary>
+    internal static void IncrementTimer() => IGT_FrameCounter++;
 
     #endregion
 
@@ -260,15 +270,18 @@ public class RunTracker : ModSystem
         catch { }
     }
 
-    // This ensures that the "default run category" config and the saved
-    // category from the last active run are valid. If the user unloads
-    // the mod which added their specific category, or changes the saved category
-    // from their last active run, it can cause the game to crash by trying
-    // to access a category that does not exist.
-    internal static void ValidateCategoryTypes(Action orig)
+    /// <summary>
+    /// category from the last active run are valid. If the user unloads
+    /// the mod which added their specific category, or changes the saved category
+    /// from their last active run, it can cause the game to crash by trying
+    /// to access a category that does not exist.
+    /// </summary>
+    /// <param name="orig">Hooks ConfigManager.FinishSetup(). If you are calling this manually, you can pass in <see langword="null"/>.</param>
+    #nullable enable
+    public static void ValidateCategoryTypes(Action? orig)
     {
         // ConfigManager.FinishSetup()
-        orig();
+        orig?.Invoke();
 
         if (RunCategory is not null && !SpeedrunDisplay.AllCategories.ContainsKey(RunCategory))
             RunCategory = null;

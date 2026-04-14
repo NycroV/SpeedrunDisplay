@@ -14,7 +14,7 @@ public class RunUpdater : ModSystem
         // We don't want to start the timer until the player enters the world,
         // so we do this here instead of in the mod system.
         if (RunTracker.IGT_FrameCounter == 0)
-            RunTracker.RTA_RunStart = DateTime.UtcNow;
+            RunTracker.MarkRunStart();
 
         // Retrieve the current run category and the run end criteria.
         var runCategory = SpeedrunDisplay.AllCategories[RunTracker.RunCategory!];
@@ -41,7 +41,7 @@ public class RunUpdater : ModSystem
         }
 
         // Update IGT
-        RunTracker.IGT_FrameCounter++;
+        RunTracker.IncrementTimer();
 
         // We do not actually keep track of RTA, instead subtracting current
         // UTC DateTime from the cached start-of-run UTC DateTime when we need the run length.

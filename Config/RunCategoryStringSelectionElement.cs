@@ -1,5 +1,6 @@
 ﻿using System;
-using Terraria.Localization;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 
@@ -22,7 +23,7 @@ namespace SpeedrunDisplay.Config
         {
             base.OnBind();
             Options = [..SpeedrunDisplay.AllCategories.Keys];
-            TextDisplayFunction = () => Label + ": " + SpeedrunDisplay.AllCategories[GetValue()].LocalizationKey.Fetch();
+            TextDisplayFunction = () => Label + ": " + SpeedrunDisplay.AllCategories.GetValueOrDefault(GetValue(), SpeedrunDisplay.AllCategories.First().Value).LocalizationKey.Fetch();
         }
 
         private void SetValue(int index)

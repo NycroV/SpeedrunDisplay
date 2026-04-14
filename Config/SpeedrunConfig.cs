@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using SpeedrunDisplay.Systems;
 using System.ComponentModel;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
@@ -49,6 +50,7 @@ public class SpeedrunConfig : ModConfig
     public bool LockSpeedrunUIPos { get; set; }
 
     [DefaultValue(1f)]
+    [Range(0.1f, 3f)]
     public float SpeedrunUIScale { get; set; }
 
     [DefaultValue(0.9f)]
@@ -56,4 +58,33 @@ public class SpeedrunConfig : ModConfig
 
     [DefaultValue(0.1f)]
     public float SpeedrunUIPosY { get; set; }
+
+    [Header("SplitsCategoriesConfig")]
+    [DefaultValue(false)]
+    public bool ExtendedVariants { get; set; }
+
+    [DefaultValue(false)]
+    public bool BundlePillars { get; set; }
+
+    [DefaultValue(true)]
+    public bool BundleEvils { get; set; }
+
+    public override bool NeedsReload(ModConfig pendingConfig) => RunTracker.RunActive;
+
+    public override void OnChanged()
+    {
+        if (!ExtendedVariants)
+        {
+            foreach (string category in SpeedrunDisplay.ExtendedCategories.Keys)
+                SpeedrunDisplay.AllCategories.Remove(category);
+        }
+
+        else
+        {
+            foreach (var (key, category) in SpeedrunDisplay.ExtendedCategories)
+                SpeedrunDisplay.AllCategories[key] = category;
+        }
+
+        RunTracker.ValidateCategoryTypes(null);
+    }
 }
