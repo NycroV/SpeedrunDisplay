@@ -1,11 +1,24 @@
 Categories: {
 	MoonLord: Vanilla: Moon Lord
 	AllBosses: Vanilla: All Bosses
+	AllPreHardmodeBosses: Vanilla: Pre-HM Bosses
+	NightsEdge: Vanilla: Nights Edge
+	CraftZenith: Vanilla: Craft Zenith
+	CraftTerraBlade: Vanilla: Craft Terra Blade
+	AllEventsAndBosses: Vanilla: All Events/Bosses
+	TorchGod: Vanilla: Torch God
+	OldOnesArmy: Vanilla: Old One's Army
+	AllAchievements: Vanilla: All Achievements
+	PlatinumCoin: Vanilla: Platinum Coin
+	DungeonGuardian: Vanilla: Dungeon Guardian
+	GoblinArmy: Vanilla: Goblin Army
 }
 
 Splits: {
 	KingSlime: KS
 	EyeOfCthulhu: EoC
+	EaterOfWorlds: EoW
+	BrainOfCthulhu: BoC
 	EvilBoss: Evil Boss
 	QueenBee: QB
 	Deerclops: Deer
@@ -24,8 +37,31 @@ Splits: {
 	NebulaPillar: Nebula
 	VortexPillar: Vortex
 	StardustPillar: Stardust
+	Celestials: Pillars
 	MoonLord: ML
 	AllBosses: All Bosses
+	AllPreHardmodeBosses: All Pre-HM
+	NightsEdge: Nights Edge
+	SlimeRain: Slime Rain
+	BloodMoon: Blood Moon
+	GoblinArmy: Goblins
+	FrostLegion: Legion
+	SolarEclipse: Eclipse
+	PirateInvasions: Pirates
+	PumpkinMoon: Pump Moon
+	FrostMoon: Frost Moon
+	MartianMadness: Martians
+	OldOnesArmyT1: OOA-T1
+	OldOnesArmyT2: OOA-T2
+	OldOnesArmyT3: OOA-T3
+	CraftZenith: Zenith
+	CraftTerraBlade: Terra Blade
+	AllEventsAndBosses: 100%
+	TorchGod: Torch God
+	OldOnesArmy: OOA
+	AllAchievements: Achievements
+	PlatinumCoin: Plat
+	DungeonGuardian: Guardian
 }
 
 UI: {
@@ -42,7 +78,6 @@ UI: {
 	NewRun: New Run
 	ExportRun: Export Run
 }
-
 
 Configs: {
 	SpeedrunConfig: {
@@ -92,6 +127,21 @@ Configs: {
 		SpeedrunUIPosY: {
 			Label: Speedrun UI Y Position
 			Tooltip: The position along the Y axis of the screen to place the speedrun timer UI
+		}
+
+		ExtendedVariants: {
+			Label: Extended Categories
+			Tooltip: Enables speedrun category extensions.
+		}
+
+		BundlePillars: {
+			Label: Bundle Pillars
+			Tooltip: Bundles the celestial pillars into one event split.
+		}
+
+		BundleEvils: {
+			Label: Bundle Evils
+			Tooltip: Bundles the evil bosses into one split (EoW/BoC).
 		}
 	}
 }

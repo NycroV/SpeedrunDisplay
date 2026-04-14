@@ -71,7 +71,7 @@ public class SpeedrunDisplay : Mod
             ["NebulaPillar"] = new(GetKey("Splits.NebulaPillar"), BossHead(29), () => NPC.downedTowerNebula && !BundlePillars()),
             ["VortexPillar"] = new(GetKey("Splits.VortexPillar"), BossHead(28), () => NPC.downedTowerVortex && !BundlePillars()),
             ["StardustPillar"] = new(GetKey("Splits.StardustPillar"), BossHead(30), () => NPC.downedTowerStardust && !BundlePillars()),
-            ["Celestials"] = new(GetKey("Splits.Celestials"), SpeedrunAsset(""), () => NPC.downedTowers && BundlePillars()),
+            ["Pillars"] = new(GetKey("Splits.Pillars"), SpeedrunAsset(""), () => NPC.downedTowers && BundlePillars()),
             ["MoonLord"] = new(GetKey("Splits.MoonLord"), BossHead(8), () => NPC.downedMoonlord),
 
             ["AllBosses"] = new(GetKey("Splits.AllBosses"), SpeedrunAsset("AllBossesIcon"), () =>
@@ -105,7 +105,7 @@ public class SpeedrunDisplay : Mod
                 NPC.downedSlimeKing),
 
             // Split only available in "Nights Edge" category
-            ["NightsEdge"] = new(GetKey("Splits.NightsEdge"), SpeedrunAsset(""), () => RunTracker.RunCategory == "NightsEdge" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.NightsEdge)),
+            ["CraftNightsEdge"] = new(GetKey("Splits.CraftNightsEdge"), SpeedrunAsset(""), () => RunTracker.RunCategory == "CraftNightsEdge" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.NightsEdge)),
 
             // Extended splits
             ["SlimeRain"] = new(GetKey("Splits.SlimeRain"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedSlimeRain),
@@ -140,7 +140,7 @@ public class SpeedrunDisplay : Mod
             ["MoonLord"] = new(GetKey("Categories.MoonLord"), GetSplit("MoonLord")),
             ["AllBosses"] = new(GetKey("Categories.AllBosses"), GetSplit("AllBosses")),
             ["AllPreHardmodeBosses"] = new(GetKey("Categories.AllPreHardmodeBosses"), GetSplit("AllPreHardmodeBosses")),
-            ["NightsEdge"] = new(GetKey("Categories.NightsEdge"), GetSplit("NightsEdge"))
+            ["NightsEdge"] = new(GetKey("Categories.NightsEdge"), GetSplit("CraftNightsEdge"))
 
             // Extended categories are not included in the dictionary by default
             // to prevent cluttering. They are added/removed in the config class.
