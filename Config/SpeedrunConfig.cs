@@ -73,6 +73,9 @@ public class SpeedrunConfig : ModConfig
 
     public override void OnChanged()
     {
+        if (SpeedrunDisplay.Instance is null)
+            return;
+
         if (!ExtendedVariants)
         {
             foreach (string category in SpeedrunDisplay.ExtendedCategories.Keys)

@@ -35,8 +35,10 @@ public class SpeedrunDisplay : Mod
 
     // Allows usage in static contexts
     internal static string GetKey(string suffix) => Instance.GetLocalizationKey(suffix);
+    internal static Asset<Texture2D> ItemSprite(int itemId) => ModContent.Request<Texture2D>($"Terraria/Images/Item_{itemId}");
     internal static Asset<Texture2D> BossHead(int bossId) => ModContent.Request<Texture2D>($"Terraria/Images/NPC_Head_Boss_{bossId}");
     internal static Asset<Texture2D> SpeedrunAsset(string name) => ModContent.Request<Texture2D>($"SpeedrunDisplay/Assets/Textures/{name}");
+    internal static Asset<Texture2D> VanillaAsset(string name) => ModContent.Request<Texture2D>($"Terraria/Images/{name}");
 
     // Used for config-based splits
     internal static bool Extended() { return SpeedrunConfig.Instance.ExtendedVariants; }
@@ -51,11 +53,11 @@ public class SpeedrunDisplay : Mod
         {
             ["KingSlime"] = new(GetKey("Splits.KingSlime"), BossHead(7), () => NPC.downedSlimeKing),
             ["EyeOfCthulhu"] = new(GetKey("Splits.EyeOfCthulhu"), BossHead(0), () => NPC.downedBoss1),
-            ["EaterOfWorlds"] = new(GetKey("Splits.EaterOfWorlds"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && !WorldGen.crimson && !BundleEvils()),
-            ["BrainOfCthulhu"] = new(GetKey("Splits.BrainOfCthulhu"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && WorldGen.crimson && !BundleEvils()),
+            ["EaterOfWorlds"] = new(GetKey("Splits.EaterOfWorlds"), BossHead(2), () => NPC.downedBoss2 && !WorldGen.crimson && !BundleEvils()),
+            ["BrainOfCthulhu"] = new(GetKey("Splits.BrainOfCthulhu"), BossHead(23), () => NPC.downedBoss2 && WorldGen.crimson && !BundleEvils()),
             ["EvilBoss"] = new(GetKey("Splits.EvilBoss"), SpeedrunAsset("EvilBossIcon"), () => NPC.downedBoss2 && BundleEvils()),
             ["QueenBee"] = new(GetKey("Splits.QueenBee"), BossHead(14), () => NPC.downedQueenBee),
-            ["Deerclops"] = new(GetKey("Splits.Deerclops"), SpeedrunAsset("DeerclopsIcon"), () => NPC.downedDeerclops),
+            ["Deerclops"] = new(GetKey("Splits.Deerclops"), BossHead(39), () => NPC.downedDeerclops),
             ["Skeletron"] = new(GetKey("Splits.Skeletron"), BossHead(19), () => NPC.downedBoss3),
             ["WallOfFlesh"] = new(GetKey("Splits.WallOfFlesh"), BossHead(22), () => Main.hardMode),
             ["QueenSlime"] = new(GetKey("Splits.QueenSlime"), BossHead(38), () => NPC.downedQueenSlime),
@@ -71,7 +73,7 @@ public class SpeedrunDisplay : Mod
             ["NebulaPillar"] = new(GetKey("Splits.NebulaPillar"), BossHead(29), () => NPC.downedTowerNebula && !BundlePillars()),
             ["VortexPillar"] = new(GetKey("Splits.VortexPillar"), BossHead(28), () => NPC.downedTowerVortex && !BundlePillars()),
             ["StardustPillar"] = new(GetKey("Splits.StardustPillar"), BossHead(30), () => NPC.downedTowerStardust && !BundlePillars()),
-            ["Pillars"] = new(GetKey("Splits.Pillars"), SpeedrunAsset(""), () => NPC.downedTowers && BundlePillars()),
+            ["Pillars"] = new(GetKey("Splits.Pillars"), SpeedrunAsset("PillarsIcon"), () => NPC.downedTowers && BundlePillars()),
             ["MoonLord"] = new(GetKey("Splits.MoonLord"), BossHead(8), () => NPC.downedMoonlord),
 
             ["AllBosses"] = new(GetKey("Splits.AllBosses"), SpeedrunAsset("AllBossesIcon"), () =>
@@ -105,34 +107,62 @@ public class SpeedrunDisplay : Mod
                 NPC.downedSlimeKing),
 
             // Split only available in "Nights Edge" category
-            ["CraftNightsEdge"] = new(GetKey("Splits.CraftNightsEdge"), SpeedrunAsset(""), () => RunTracker.RunCategory == "CraftNightsEdge" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.NightsEdge)),
+            ["CraftNightsEdge"] = new(GetKey("Splits.CraftNightsEdge"), ItemSprite(ItemID.NightsEdge), () => RunTracker.RunCategory == "NightsEdge" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.NightsEdge)),
 
             // Extended splits
-            ["SlimeRain"] = new(GetKey("Splits.SlimeRain"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedSlimeRain),
-            ["BloodMoon"] = new(GetKey("Splits.BloodMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedBloodMoon),
-            ["GoblinArmy"] = new(GetKey("Splits.GoblinArmy"), SpeedrunAsset(""), () => Extended() && NPC.downedGoblins),
+            ["SlimeRain"] = new(GetKey("Splits.SlimeRain"), SpeedrunAsset("SlimeRain"), () => Extended() && DownedSystem.downedSlimeRain),
+            ["BloodMoon"] = new(GetKey("Splits.BloodMoon"), SpeedrunAsset("BloodMoon"), () => Extended() && DownedSystem.downedBloodMoon),
+            ["GoblinArmy"] = new(GetKey("Splits.GoblinArmy"), VanillaAsset("Extra_9"), () => Extended() && NPC.downedGoblins),
 
-            ["FrostLegion"] = new(GetKey("Splits.FrostLegion"), SpeedrunAsset(""), () => Extended() && NPC.downedFrost),
-            ["SolarEclipse"] = new(GetKey("Splits.SolarEclipse"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedSolarEclipse),
-            ["PirateInvasion"] = new(GetKey("Splits.PirateInvasion"), SpeedrunAsset(""), () => Extended() && NPC.downedPirates),
-            ["PumpkinMoon"] = new(GetKey("Splits.PumpkinMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedPumpkinMoon),
-            ["FrostMoon"] = new(GetKey("Splits.FrostMoon"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedFrostMoon),
-            ["MartianMadness"] = new(GetKey("Splits.MartianMadness"), SpeedrunAsset(""), () => Extended() && NPC.downedMartians),
+            ["FrostLegion"] = new(GetKey("Splits.FrostLegion"), VanillaAsset("Extra_7"), () => Extended() && NPC.downedFrost),
+            ["SolarEclipse"] = new(GetKey("Splits.SolarEclipse"), SpeedrunAsset("SolarEclipse"), () => Extended() && DownedSystem.downedSolarEclipse),
+            ["PirateInvasion"] = new(GetKey("Splits.PirateInvasion"), VanillaAsset("Extra_11"), () => Extended() && NPC.downedPirates),
+            ["PumpkinMoon"] = new(GetKey("Splits.PumpkinMoon"), VanillaAsset("Extra_12"), () => Extended() && DownedSystem.downedPumpkinMoon),
+            ["FrostMoon"] = new(GetKey("Splits.FrostMoon"), VanillaAsset("Extra_8"), () => Extended() && DownedSystem.downedFrostMoon),
+            ["MartianMadness"] = new(GetKey("Splits.MartianMadness"), VanillaAsset("Extra_10"), () => Extended() && NPC.downedMartians),
 
-            ["OldOnesArmyT1"] = new(GetKey("Splits.OOAT1"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT1),
-            ["OldOnesArmyT2"] = new(GetKey("Splits.OOAT2"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT2),
-            ["OldOnesArmyT3"] = new(GetKey("Splits.OOAT3"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionT3),
+            ["OldOnesArmyT1"] = new(GetKey("Splits.OOAT1"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT1),
+            ["OldOnesArmyT2"] = new(GetKey("Splits.OOAT2"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT2),
+            ["OldOnesArmyT3"] = new(GetKey("Splits.OOAT3"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionT3),
 
-            ["CraftZenith"] = new(GetKey("Splits.CraftZenith"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "CraftZenith" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.Zenith)),
-            ["CraftTerraBlade"] = new(GetKey("Splits.CraftTerraBlade"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "CraftTerraBlade" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.TerraBlade)),
-            ["AllEventsAndBosses"] = new(GetKey("Splits.AllEventsAndBosses"), SpeedrunAsset(""), () => Extended() && false), // TODO
+            ["CraftZenith"] = new(GetKey("Splits.CraftZenith"), ItemSprite(ItemID.Zenith), () => Extended() && RunTracker.RunCategory == "CraftZenith" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.Zenith)),
+            ["CraftTerraBlade"] = new(GetKey("Splits.CraftTerraBlade"), ItemSprite(ItemID.TerraBlade), () => Extended() && RunTracker.RunCategory == "CraftTerraBlade" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.TerraBlade)),
+            ["AllEventsAndBosses"] = new(GetKey("Splits.AllEventsAndBosses"), SpeedrunAsset("AllBossesIcon"), () => Extended() &&
+                NPC.downedMoonlord &&
+                NPC.downedAncientCultist &&
+                NPC.downedEmpressOfLight &&
+                NPC.downedFishron &&
+                NPC.downedGolemBoss &&
+                NPC.downedPlantBoss &&
+                NPC.downedMechBoss3 &&
+                NPC.downedMechBoss2 &&
+                NPC.downedMechBoss1 &&
+                NPC.downedQueenSlime &&
+                Main.hardMode &&
+                NPC.downedBoss3 &&
+                NPC.downedDeerclops &&
+                NPC.downedQueenBee &&
+                NPC.downedBoss2 &&
+                NPC.downedBoss1 &&
+                NPC.downedSlimeKing &&
+                // Events
+                NPC.downedMartians &&
+                DownedSystem.downedFrostMoon &&
+                DownedSystem.downedBloodMoon &&
+                DownedSystem.downedPumpkinMoon &&
+                NPC.downedPirates &&
+                DownedSystem.downedSolarEclipse &&
+                NPC.downedFrost &&
+                NPC.downedGoblins &&
+                DownedSystem.downedSlimeRain &&
+                DD2Event.DownedInvasionAnyDifficulty),
 
-            ["TorchGod"] = new(GetKey("Splits.TorchGod"), SpeedrunAsset(""), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
-            ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset(""), () => Extended() && DD2Event.DownedInvasionAnyDifficulty),
-            ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset(""), () => Extended() && false), // TODO
+            ["TorchGod"] = new(GetKey("Splits.TorchGod"), ItemSprite(ItemID.TorchGodsFavor), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
+            ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset("OldOnesArmy"), () => Extended() && DD2Event.DownedInvasionAnyDifficulty),
+            ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
 
-            ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), SpeedrunAsset(""), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),
-            ["DungeonGuardian"] = new(GetKey("Splits.DungeonGuardian"), SpeedrunAsset(""), () => Extended() && DownedSystem.downedDungeonGuardian)
+            ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), ItemSprite(ItemID.PlatinumCoin), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),
+            ["DungeonGuardian"] = new(GetKey("Splits.DungeonGuardian"), BossHead(19), () => Extended() && DownedSystem.downedDungeonGuardian)
         });
 
         AllCategories.AddRange(new Dictionary<string, Category>()
@@ -145,6 +175,8 @@ public class SpeedrunDisplay : Mod
             // Extended categories are not included in the dictionary by default
             // to prevent cluttering. They are added/removed in the config class.
         });
+
+        SpeedrunConfig.Instance.OnChanged();
     }
 
     public static Dictionary<string, Category> ExtendedCategories => new()
