@@ -79,6 +79,17 @@ UI: {
 	ExportRun: Export Run
 }
 
+MessageBox: {
+	Title: Replace File
+	Message:
+		'''
+		File "{0}" already exists.
+		Do you want to replace it?
+		'''
+	No: No
+	Yes: Yes
+}
+
 Configs: {
 	SpeedrunConfig: {
 		DisplayName: Speedrun Timer Config

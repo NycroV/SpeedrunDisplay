@@ -444,8 +444,7 @@ public class RunDisplay : ModSystem
         if (uiPosChange == Vector2.Zero)
             return drawArea;
 
-        SpeedrunConfig.Instance.SpeedrunUIPosX += uiPosChange.X;
-        SpeedrunConfig.Instance.SpeedrunUIPosY += uiPosChange.Y;
+        SpeedrunConfig.Instance.SpeedrunUIPos += uiPosChange;
         return drawArea;
     }
 

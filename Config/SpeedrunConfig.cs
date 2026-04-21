@@ -19,7 +19,7 @@ public class SpeedrunConfig : ModConfig
     {
         get
         {
-            var conf = ModContent.GetInstance<SpeedrunConfig>();
+            var conf = ContentInstance<SpeedrunConfig>.Instance;
             
             if (conf is not null)
                 _configCache = conf;
@@ -29,7 +29,11 @@ public class SpeedrunConfig : ModConfig
     }
 
     [JsonIgnore]
-    public Vector2 SpeedrunUIPos => new(SpeedrunUIPosX, SpeedrunUIPosY);
+    public Vector2 SpeedrunUIPos
+    {
+        get => new(SpeedrunUIPosX, SpeedrunUIPosY);
+        set { SpeedrunUIPosX = value.X; SpeedrunUIPosY = value.Y; }
+    }
 
     [Header("MainConfig")]
     [DefaultValue(6)]

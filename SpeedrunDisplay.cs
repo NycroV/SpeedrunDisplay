@@ -159,7 +159,7 @@ public class SpeedrunDisplay : Mod
 
             ["TorchGod"] = new(GetKey("Splits.TorchGod"), ItemSprite(ItemID.TorchGodsFavor), () => Extended() && Main.LocalPlayer.unlockedBiomeTorches),
             ["OldOnesArmy"] = new(GetKey("Splits.OldOnesArmy"), SpeedrunAsset("OldOnesArmy"), () => Extended() && RunTracker.RunCategory == "OldOnesArmy" && DD2Event.DownedInvasionAnyDifficulty),
-            // ["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
+            //["AllAchievements"] = new(GetKey("Splits.AllAchievements"), SpeedrunAsset("AllBossesIcon"), () => Extended() && false), // TODO
 
             ["PlatinumCoin"] = new(GetKey("Splits.PlatinumCoin"), ItemSprite(ItemID.PlatinumCoin), () => Extended() && RunTracker.RunCategory == "PlatinumCoin" && Main.LocalPlayer.inventory.Any(i => i.stack > 0 && i.type == ItemID.PlatinumCoin)),
             ["DungeonGuardian"] = new(GetKey("Splits.DungeonGuardian"), BossHead(19), () => Extended() && DownedSystem.downedDungeonGuardian)
