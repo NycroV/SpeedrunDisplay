@@ -66,9 +66,4 @@ public readonly record struct CompletedRun(Category Category, ReadOnlyCollection
         text += $"------\n{IGT.Format(fractionalSeconds: true)} IGT  --  {RTA.Format(fractionalSeconds: true)} RTA";
         return text;
     }
-
-    public static CompletedRun FromString(string str)
-    {
-        return default;
-    }
 }

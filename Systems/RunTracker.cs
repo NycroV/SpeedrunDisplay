@@ -175,7 +175,6 @@ public class RunTracker : ModSystem
             }
         }
 
-        // Custom .ToString()
         if (filePath is not null)
             File.WriteAllText(filePath, LastCompletedRun.Value.ToString());
     }
