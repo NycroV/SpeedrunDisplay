@@ -89,16 +89,16 @@ AddSplit("Perforators", BossHead<PerforatorHive>(), DownedPerforators);
 AddSplit("SlimeGod", BossHead<SlimeGodCore>(), DownedSlimeGod);
 // ....
 
-// Cynosure is only available in the "Calamity: Any%" category
-AddSplit("Cynosure", ModContent.Request<Texture2D>("CalamityMod/Items/LoreItems/LoreCynosure"), () => (string)speedrunDisplay.Call("runcategory") == "CalamityAny%" && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
-AddSplit("CalamityAllBosses", Request<Texture2D>("CalamityMod/icon_small"), () =>
+// Cynosure is only available in the "Calamity: Cynosure" category
+AddSplit("Cynosure", ModContent.Request<Texture2D>("CalamityMod/Items/LoreItems/LoreCynosure"), () => (string)speedrunDisplay.Call("runcategory") == "CalamityCynosure" && DownedBossSystem.downedCalamitas && DownedBossSystem.downedExoMechs);
+AddSplit("AllCalamityBosses", Request<Texture2D>("CalamityMod/icon_small"), () =>
   DownedBossSystem.downedExoMechs &&
   DownedBossSystem.downedCalamitas &&
   DownedBossSystem.downedYharon &&
   DownedBossSystem.downedDoG /* && ....*/);
 
-AddCategory("CalamityAny%", GetSplit("Cynosure"));
-AddCategory("CalamityAllBosses%", GetSplit("CalamityAllBosses"));
+AddCategory("CalamityCynosure", GetSplit("Cynosure"));
+AddCategory("CalamityAllBosses", GetSplit("AllCalamityBosses"));
 ```
 
 If you have any questions, please don't hesitate to reach out and ask on Discord: @nycro
